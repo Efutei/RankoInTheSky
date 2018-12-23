@@ -142,8 +142,7 @@ phina.define('MainScene', {
     if(time <= -2000){
       this.exit({
         score: score,
-        message: 'やみのま！',
-        hashtags: '蘭子inTheSky'
+        hashtags: ''
       });
     }
   },
@@ -380,7 +379,7 @@ phina.define('ResultScene', {
     }
 
     this.shareButton.onclick = function() {
-      var text = 'Score: {0}\n{1}\n'.format(params.score, "やみのま！");
+      var text = 'Score: {0}\n{1}\n'.format(params.score, "#蘭子inTheSky");
       var url = phina.social.Twitter.createURL({
         text: text,
         hashtags: params.hashtags,
