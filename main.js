@@ -15,8 +15,8 @@ var SCREEN_WIDTH  = 640;
 var SCREEN_HEIGHT = 360;
 var RANKO_START_X = SCREEN_WIDTH / 2 - 150;
 var RANKO_START_Y = SCREEN_HEIGHT / 2 - 50;
-var score = 0;
-var time = 30000;
+var score;
+var time;
 var gameOver = false;
 
 phina.define('StartImage', {
@@ -89,7 +89,7 @@ phina.define('MainScene', {
     this.superInit();
     //グローバル変数を初期値に
     score = 0;
-    time = 30000;
+    time = 30999;
     gameOver = false;
     // 背景色を指定
     this.backgroundColor = '#70caf1';
@@ -129,7 +129,7 @@ phina.define('MainScene', {
     this.circles.each(function(circle, index){
       if(circle.hitTestRect(ranko.x, ranko.y)){
         score += 1;
-        circle.remove();
+        circle.taken();
         this.circles.splice(index, 1);
       }
     }, this);
@@ -232,6 +232,18 @@ phina.define('MagicCircle', {
   },
   checkOutOfWindow: function(){
     return this.x < -SCREEN_WIDTH;
+  },
+  taken: function(){
+    this.tweener
+    .to({
+      scaleX: 0.9,
+      scaleY: 3,
+      alpha: 0,
+    },1000,"swing")
+    .call(function(){
+      this.target.remove();
+    })
+    .play();
   }
 });
 
