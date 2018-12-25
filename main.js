@@ -114,6 +114,8 @@ phina.define('MainScene', {
     this.timeText = TimeText().addChildTo(this);
     this.circles = [];
     this.circleCount = 0;
+    SoundManager.setVolume(0.8);
+    SoundManager.setVolumeMusic(0.06);
     SoundManager.playMusic('bgm');
   },
   update: function(app){
@@ -159,7 +161,8 @@ phina.define('MainScene', {
         rankMessage = 'Rank: 制限中';
       }
     }
-    if(time <= -2000){
+    if(time <= -2600){
+      SoundManager.stopMusic();
       this.exit({
         score: score,
         message: rankMessage,
