@@ -9,6 +9,7 @@ var ASSETS = {
     yaminoma: './img/yaminoma.png'
   },
   sound: {
+    bgm: './sound/Ranko_in_the_Sky.mp3'
   },
 };
 var SCREEN_WIDTH  = 640;
@@ -94,7 +95,7 @@ phina.define('MainScene', {
     this.superInit();
     //グローバル変数を初期値に
     score = 0;
-    time = 3999;
+    time = 30999;
     gameOverFlag = false;
     gotRank = false;
     thisResult = null;
@@ -113,6 +114,7 @@ phina.define('MainScene', {
     this.timeText = TimeText().addChildTo(this);
     this.circles = [];
     this.circleCount = 0;
+    SoundManager.playMusic('bgm');
   },
   update: function(app){
     time -= app.deltaTime;
