@@ -9,6 +9,7 @@ var ASSETS = {
     yaminoma: './img/yaminoma.png'
   },
   sound: {
+    get: './sound/decision7.mp3',
     bgm: './sound/Ranko_in_the_Sky.mp3'
   },
 };
@@ -146,6 +147,8 @@ phina.define('MainScene', {
         score += 1;
         circle.taken();
         this.circles.splice(index, 1);
+        SoundManager.setVolume(0.05);
+        SoundManager.play('get');
       }
     }, this);
   },
