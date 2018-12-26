@@ -143,7 +143,7 @@ phina.define('MainScene', {
   },
   hitTestCircle: function(ranko){
     this.circles.each(function(circle, index){
-      if(circle.hitTestRect(ranko.x, ranko.y)){
+      if(circle.hitTestRect(ranko.x + 5, ranko.y)){
         score += 1;
         circle.taken();
         this.circles.splice(index, 1);
