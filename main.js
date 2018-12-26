@@ -127,7 +127,7 @@ phina.define('MainScene', {
   },
   hitTestCircle: function(ranko){
     this.circles.each(function(circle, index){
-      if(circle.hitTestRect(ranko.x, ranko.y)){
+      if(circle.hitTestRect(ranko.x + 5, ranko.y)){
         score += 1;
         circle.taken();
         this.circles.splice(index, 1);
@@ -176,7 +176,7 @@ phina.define('Ranko', {
     this.superInit('ranko', 386 * 0.3, 300 * 0.3);
     this.x = RANKO_START_X;
     this.y = RANKO_START_Y;
-    this.defaultMoveSpeed = 8 + score; //角度を考慮しない値
+    this.defaultMoveSpeed = 8; //角度を考慮しない値
     this.moveSpeedX = 5; //X方向へのスピード
     this.moveSpeedY = 0; //Y方向へのスピード
     this.degree = 0;
@@ -219,10 +219,9 @@ phina.define('Ranko', {
 phina.define('MagicCircle', {
   superClass: 'Sprite',
   init: function(){
-    this.superInit('magicCircle', 100, 100);
-    this.scaleX *= 0.3;
+    this.superInit('magicCircle', 40, 120);
     this.x = SCREEN_WIDTH + 30;
-    this.y = Random.randint(70, SCREEN_HEIGHT - 70);
+    this.y = Random.randint(70, SCREEN_HEIGHT - 75);
   },
   update: function(){
     this.move();
@@ -236,7 +235,7 @@ phina.define('MagicCircle', {
   taken: function(){
     this.tweener
     .to({
-      scaleX: 0.9,
+      scaleX: 3,
       scaleY: 3,
       alpha: 0,
     },300,"swing")
