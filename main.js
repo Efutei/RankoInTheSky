@@ -9,8 +9,6 @@ var ASSETS = {
     yaminoma: './img/yaminoma.png'
   },
   sound: {
-    get: './sound/decision7.mp3',
-    bgm: './sound/Ranko_in_the_Sky.mp3'
   },
 };
 var SCREEN_WIDTH  = 640;
@@ -19,12 +17,7 @@ var RANKO_START_X = SCREEN_WIDTH / 2 - 150;
 var RANKO_START_Y = SCREEN_HEIGHT / 2 - 50;
 var score;
 var time;
-var gameOverFlag = false;
-var thisResult;
-var rankTimeout;
-var restrictionCount = 0;
-var gotRank = false;
-var rankMessage = "Rank: 取得中...";
+var gameOver = false;
 
 phina.define('StartImage', {
   superClass: 'Sprite',
@@ -97,13 +90,7 @@ phina.define('MainScene', {
     //グローバル変数を初期値に
     score = 0;
     time = 30999;
-    gameOverFlag = false;
-    gotRank = false;
-    thisResult = null;
-    rankMessage = "Rank: 取得中...";
-    if(restrictionCount > 0){//ランキング機能を制限
-      restrictionCount -= 1;
-    }
+    gameOver = false;
     // 背景色を指定
     this.backgroundColor = '#70caf1';
     this.bg0 = Bg().addChildTo(this);
@@ -115,9 +102,6 @@ phina.define('MainScene', {
     this.timeText = TimeText().addChildTo(this);
     this.circles = [];
     this.circleCount = 0;
-    SoundManager.setVolume(0.8);
-    SoundManager.setVolumeMusic(0.06);
-    SoundManager.playMusic('bgm');
   },
   update: function(app){
     time -= app.deltaTime;
@@ -129,7 +113,7 @@ phina.define('MainScene', {
       this.ranko.noseDown();
     }
     this.spawnCircle();
-    if(!gameOverFlag){
+    if(!gameOver){
       this.hitTestCircle(this.ranko);
     }
     this.gameOver();
@@ -147,55 +131,23 @@ phina.define('MainScene', {
         score += 1;
         circle.taken();
         this.circles.splice(index, 1);
-        SoundManager.setVolume(0.05);
-        SoundManager.play('get');
       }
     }, this);
   },
   gameOver: function(){
-    if(time <= 0 && !gameOverFlag){
-      gameOverFlag = true;
+    if(time <= 0){
+      gameOver = true;
       this.finishText = FinishText().addChildTo(this);
-      gotRank = false; //リスタートが早い人対策
-      if(restrictionCount === 0){
-        this.getRank();
-        rankMessage = 'Rank: 取得中...';
-      }else{
-        rankMessage = 'Rank: 制限中';
-      }
     }
-    if(time <= -2600){
-      SoundManager.stopMusic();
+    if(time <= -2000){
       this.exit({
         score: score,
-        message: rankMessage,
+        message: 'やみのま！',
         hashtags: '蘭子inTheSky'
       });
     }
   },
-  getRank: function(){
-    rankTimeout = window.setTimeout(failedToFetch, 20000);
-    var script = phina.asset.Script();
-    var src = "https://script.google.com/macros/s/AKfycby2-qrBo4CGJ62E-gg7jEBdtsF2qnhUY6vt_dzSJbej236NeSo/exec?";
-    src += "score="+score+"&callback=cameRankData";
-    script.load(src);
-  }
 });
-
-function cameRankData(json){
-  window.clearTimeout(rankTimeout);
-  rankMessage = "Rank: "+json.response.rank + " / " + json.response.total;
-  if(thisResult){
-    thisResult.rankingLabel.text = rankMessage;
-  }
-  gotRank = true;
-}
-
-function failedToFetch(){
-  thisResult.rankingLabel.text = "Rank: 取得失敗";
-  restrictionCount = 3;
-}
-
 
 phina.define('Bg', {
   superClass: 'Sprite',
@@ -345,9 +297,9 @@ phina.define('FinishText',{
 phina.define('GameOverImage', {
   superClass: 'Sprite',
   init: function(){
-    this.superInit('yaminoma', 334 * 0.9, 220 * 0.9);
+    this.superInit('yaminoma', 334, 220);
     this.x = SCREEN_WIDTH / 2;
-    this.y = SCREEN_WIDTH / 2 - 127;
+    this.y = SCREEN_WIDTH / 2 - 140;
   }
 });
 
@@ -375,22 +327,10 @@ phina.define('ResultScene', {
             text: 'Score: '+params.score,
             fill: params.fontColor,
             stroke: null,
-            fontSize: 50,
+            fontSize: 64,
           },
           x: this.gridX.span(8),
           y: this.gridY.span(1.5),
-        },
-
-        rankingLabel: {
-          className: 'phina.display.Label',
-          arguments: {
-            text: message,
-            fill: params.fontColor,
-            stroke: null,
-            fontSize: 30,
-          },
-          x: this.gridX.span(8),
-          y: this.gridY.span(3.5),
         },
 
         shareButton: {
@@ -440,12 +380,7 @@ phina.define('ResultScene', {
     }
 
     this.shareButton.onclick = function() {
-      var text;
-      if(gotRank){
-        text = 'Score: {0}\n{1}\n{2}\n'.format(params.score, this.parent.rankingLabel.text, "やみのま!");
-      }else{
-        text = 'Score: {0}\n{1}\n'.format(params.score, "やみのま!");
-      }
+      var text = 'Score: {0}\n{1}\n'.format(params.score, "やみのま！");
       var url = phina.social.Twitter.createURL({
         text: text,
         hashtags: params.hashtags,
